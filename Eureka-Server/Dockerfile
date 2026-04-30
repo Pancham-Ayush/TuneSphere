@@ -1,6 +1,9 @@
-FROM openjdk:25-ea-jdk
-WORKDIR /APP
+FROM eclipse-temurin:21-jdk
 
-COPY target/Eureka-Server-0.0.1-SNAPSHOT.jar /APP/EUREKA.jar
+WORKDIR /app
 
-ENTRYPOINT ["java" , "-jar" ,"EUREKA.jar"]
+COPY target/Eureka-Server-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8761
+
+CMD ["java","-jar","app.jar"]

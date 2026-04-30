@@ -46,11 +46,10 @@ public class YT_DLP_Service {
     private static Process getProcess(String videoUrl, String tempOutputPath) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(
                 "yt-dlp",
-                "-x", "--audio-format", "opus",
-                "--audio-quality", "0",
-                "--prefer-ffmpeg",
-                "--ffmpeg-location", "/usr/bin/ffmpeg",
-                "--force-overwrites",
+                "--force-ipv4",
+                "--extractor-args", "youtube:player_client=android,web",
+                "-f", "bv*+ba/b",
+                "--merge-output-format", "mp4",
                 "-o", tempOutputPath,
                 videoUrl
         );
@@ -139,10 +138,11 @@ public class YT_DLP_Service {
 
     public Song manualAdd(Song song, MultipartFile file) {
         try {
-            String fileName = System.currentTimeMillis() + Math.random() + "_" + file.getOriginalFilename();
+            String fileName = System.currentTimeMillis() + "_" + song.getName().replaceAll("[^a-zA-Z0-9\\-_]", "_") + ".opus";
             song.setPath(fileName);
             song.setSize(file.getSize());
-            this.UploadASYNC(fileName, file);
+            CompletableFuture<PutObjectResponse> future = UploadASYNC(fileName, file);
+            future.join();
             String openSearchSong_Json = objectMapper.writeValueAsString(song);
             kafkaElasticSearchAdditionReq.sendMessage(openSearchSong_Json);
             return this.songRepo.saveSong(song);

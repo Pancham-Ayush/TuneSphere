@@ -20,6 +20,6 @@ public class AiController {
 
     @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     Flux<String> sendMessage(@RequestParam String q, @RequestParam String chatId) {
-        return chatClientService.aiResponse(q, chatId).log();
+        return chatClientService.aiResponse(q, chatId);
     }
 }

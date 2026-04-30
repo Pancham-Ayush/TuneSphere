@@ -3,7 +3,6 @@ package com.example.YT_S3_MicroService.ServerSentEvent;
 import com.example.YT_S3_MicroService.Model.Song;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -17,11 +16,11 @@ public class SSE_Service {
 
     final Map<String, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
-    @Value("${JWT.secret.key}")
-    String secretKey;
-
     public SseEmitter addUser(HttpServletRequest request) {
         String email = request.getHeader("X-User-Email");
+        if (email == null || email.isBlank()) {
+            throw new RuntimeException("Missing user header");
+        }
         SseEmitter emitter = new SseEmitter(0L);
 
         emitters
@@ -49,6 +48,9 @@ public class SSE_Service {
     @SneakyThrows
     public void sendUser(String email, Song message) {
         List<SseEmitter> list = emitters.get(email);
+        if (list == null || list.isEmpty()) {
+            return;
+        }
         for (SseEmitter emitter : list) {
             try {
                 emitter.send(message);
