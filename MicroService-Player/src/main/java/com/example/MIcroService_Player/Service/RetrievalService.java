@@ -1,6 +1,6 @@
 package com.example.MIcroService_Player.Service;
 
-import com.example.MIcroService_Player.Model.Song;
+import com.example.MIcroService_Player.Model.SongMeta;
 import com.example.MIcroService_Player.Repo.SongRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,7 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import java.io.IOException;
+
 
 @Slf4j
 @Service
@@ -40,13 +40,14 @@ public class RetrievalService {
         this.redisService = redisService;
         this.songRepo = songRepo;
     }
-    public ResponseEntity<Resource> getSong(@PathVariable("songid") String songid, @RequestHeader(value = "Range", required = false) String range) throws IOException {
+
+    public ResponseEntity<Resource> getSong(@PathVariable("songid") String songid, @RequestHeader(value = "Range", required = false) String range) {
         Long cur = System.currentTimeMillis();
-        Song song = redisService.get(songid);
+        SongMeta song = redisService.get(songid);
         if (song != null) {
             log.info("From Redis Cache");
         } else {
-            song = (Song) this.songRepo.findById(songid).orElseThrow();
+            song = this.songRepo.findMetaById(songid);
             redisService.set(songid, song);
             log.info("From Database");
         }
@@ -61,32 +62,31 @@ public class RetrievalService {
             start = Long.parseLong(rangeStart[0]);
             end = Long.parseLong(rangeStart[0]) + this.chunkSize;
             end = (end > fileLength) ? fileLength - 1L : end;
+        } else {
+            range = "bytes=" + start + '-' + chunkSize;
+            end = (fileLength > chunkSize) ? chunkSize : fileLength - 1L;
         }
-        else {
-            range = "bytes=" +start+'-'+chunkSize ;
-            end = (fileLength > chunkSize) ? chunkSize : fileLength-1L;
-        }
 
-            headRequest.range("bytes=" + start + "-" + end);
-            ResponseInputStream<GetObjectResponse> responseInputStream = this.s3Client.getObject((GetObjectRequest) headRequest.build());
-            GetObjectResponse response = (GetObjectResponse) responseInputStream.response();
-            log.info(" start - end  {} {}", start, end);
+        headRequest.range("bytes=" + start + "-" + end);
+        ResponseInputStream<GetObjectResponse> responseInputStream = this.s3Client.getObject(headRequest.build());
+        GetObjectResponse response = (GetObjectResponse) responseInputStream.response();
+        log.info(" start - end  {} {}", start, end);
 
-            try {
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
-                headers.add("Accept-Ranges", "bytes");
-                headers.setContentLength(end - start + 1L);
-                String mimeType = response.contentType();
-                System.out.println(mimeType + " type");
-                if (mimeType == null) {
-                    mimeType = "application/octet-stream";
-                }
-                log.info("Time :" + (System.currentTimeMillis()-cur));
-
-                return ((ResponseEntity.BodyBuilder) ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).headers(headers)).contentType(MediaType.parseMediaType(mimeType)).body(new InputStreamResource(responseInputStream));
-            } catch (Exception var16) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
+            headers.add("Accept-Ranges", "bytes");
+            headers.setContentLength(end - start + 1L);
+            String mimeType = response.contentType();
+            System.out.println(mimeType + " type");
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
             }
+            log.info("Time :" + (System.currentTimeMillis() - cur));
+
+            return ((ResponseEntity.BodyBuilder) ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).headers(headers)).contentType(MediaType.parseMediaType(mimeType)).body(new InputStreamResource(responseInputStream));
+        } catch (Exception var16) {
+            return null;
+        }
     }
 }

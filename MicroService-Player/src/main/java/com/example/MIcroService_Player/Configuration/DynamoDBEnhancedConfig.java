@@ -15,18 +15,24 @@ public class DynamoDBEnhancedConfig {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+    private DynamoDbClient dynamoDbClient;
+
     @Bean
-    public DynamoDbEnhancedClient dynamoDbEnhancedClientLocal(
+    public DynamoDbClient createDynamoDbClient(
             @Value("${cloud.aws.credentials.access-key}") String accessKey,
             @Value("${cloud.aws.credentials.secret-key}") String secretKey) {
-
         DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)
                 ))
                 .build();
+        this.dynamoDbClient = dynamoDbClient;
+        return dynamoDbClient;
+    }
 
+    @Bean
+    public DynamoDbEnhancedClient dynamoDbEnhancedClientLocal() {
         return DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(dynamoDbClient)
                 .build();
