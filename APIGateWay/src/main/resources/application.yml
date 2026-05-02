@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: API_GateWay
+  threads:
+    virtual:
+      enabled: true
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL}
+
+JWT:
+  secret:
+    key: ${JWT_SECRET_KEY}
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        register-health-indicator: true
+        automatic-transition-from-open-to-half-open-enabled: true
+        permitted-number-of-calls-in-half-open-state: 2
+        wait-duration-in-open-state: 10s
+
+    instances:
+
+      ai-agent:
+        base-config: default
+
+      song-player:
+        base-config: default
+
+      search:
+        base-config: default
+
+      yt-ai:
+        base-config: default
+
+      security:
+        base-config: default
+
+      s3:
+        base-config: default
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
