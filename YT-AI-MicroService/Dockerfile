@@ -1,6 +1,5 @@
-FROM openjdk:25-ea-jdk
-WORKDIR /APP
-
-COPY target/YT-AI-MicroService-0.0.1-SNAPSHOT.jar /APP/YTAI.jar
-
-ENTRYPOINT ["java" , "-jar" ,"YTAI.jar"]
+FROM eclipse-temurin:25
+WORKDIR /app
+COPY /target/*.jar app.jar
+EXPOSE 8080
+CMD ["java","-jar","app.jar"]

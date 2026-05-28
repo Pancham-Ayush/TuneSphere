@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-gateway-deploy
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: api-gateway-pod
+
+  template:
+    metadata:
+      labels:
+        app: api-gateway-pod
+    spec:
+      containers:
+        - name: gateway-container
+          image: panchamayush/api-gateway:v1
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: env-prop
+

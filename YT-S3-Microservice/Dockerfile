@@ -1,5 +1,4 @@
 FROM eclipse-temurin:25-jdk-jammy
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ffmpeg \
@@ -9,8 +8,10 @@ RUN apt-get update && \
     pip3 install --no-cache-dir yt-dlp && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /APP
+WORKDIR /app
 
-COPY target/YT-S3-MicroService-0.0.1-SNAPSHOT.jar YTS3.jar
+COPY target/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "YTS3.jar"]
+EXPOSE 8080
+
+CMD ["java","-jar","app.jar"]
