@@ -1,0 +1,13 @@
+apiGatewayImage: panchamayush/api-gateway:latest
+
+eurekaServerImage: panchamayush/eureka-docker
+
+playerServiceImage: panchamayush/player-service:latest
+
+searchServiceImage: panchamayush/search-service:latest
+
+securityServiceImage: panchamayush/security-service:latest
+
+ytAiServiceImage: panchamayush/yt-ai-service:latest
+
+ytS3ServiceImage: panchamayush/yt-s3-service:latest

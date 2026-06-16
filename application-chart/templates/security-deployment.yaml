@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: security-deployment
+
+spec:
+  selector:
+    matchLabels:
+      app: security-pod
+  template:
+    metadata:
+      labels:
+        app: security-pod
+    spec:
+      containers:
+        - name: security-service
+          image: {{ .Values.securityServiceImage }}
+          envFrom:
+            - secretRef:
+                name: env-prop
+          ports:
+            - containerPort: 9090

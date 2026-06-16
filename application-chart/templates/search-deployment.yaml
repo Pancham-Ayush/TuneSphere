@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: search-engine-deployment
+
+spec:
+  selector:
+    matchLabels:
+      app: search-service-pod
+  template:
+    metadata:
+      labels:
+        app: search-service-pod
+    spec:
+      containers:
+        - name: search-pod
+          image: {{ .Values.searchServiceImage }}
+          envFrom:
+            - secretRef:
+                name: env-prop
+

@@ -1,7 +1,9 @@
-FROM openjdk:25-ea-jdk
-WORKDIR /APP
+FROM eclipse-temurin:25
 
-COPY target/APIGateWay-0.0.1-SNAPSHOT.jar /APP/APIGATEWAY.jar
+WORKDIR /app
+
+COPY target/*.jar app.jar
+
+CMD ["java","-jar","app.jar"]
+
 EXPOSE 8080
-
-ENTRYPOINT ["java" , "-jar" ,"APIGATEWAY.jar"]

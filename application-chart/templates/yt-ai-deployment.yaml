@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yt-ai-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yt-ai-pod
+  template:
+    metadata:
+      labels:
+        app: yt-ai-pod
+    spec:
+      containers:
+        - name: yt-ai-service
+          image: {{ .Values.ytAiServiceImage }}
+          envFrom:
+            - secretRef:
+                name: env-prop

@@ -1,6 +1,7 @@
-FROM openjdk:25-ea-jdk
-WORKDIR /APP
+FROM eclipse-temurin:25
 
-COPY target/SearchEngine-MicroService-0.0.1-SNAPSHOT.jar /APP/SEARCHENGINE.jar
+COPY ./target/*.jar app.jar
 
-ENTRYPOINT ["java" , "-jar" ,"SEARCHENGINE.jar"]
+EXPOSE 8080
+
+CMD ["java","-jar","app.jar"]

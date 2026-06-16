@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: yt-s3-deployment
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: yt-s3-pod
+
+  template:
+    metadata:
+      labels:
+        app: yt-s3-pod
+
+    spec:
+      containers:
+        - name: yt-s3-service
+          image: {{ .Values.ytS3ServiceImage }}
+          envFrom:
+            - secretRef:
+                name: env-prop

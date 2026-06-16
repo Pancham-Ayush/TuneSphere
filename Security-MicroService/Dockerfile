@@ -1,7 +1,9 @@
-FROM openjdk:25-ea-jdk
-WORKDIR /APP
+FROM eclipse-temurin:25
 
-COPY target/SecurityMicroService-0.0.1-SNAPSHOT.jar /APP/SECURITY.jar
+WORKDIR /app
+
+COPY ./target/*.jar app.jar
+
 EXPOSE 9090
 
-ENTRYPOINT ["java" , "-jar" ,"SECURITY.jar"]
+CMD ["java","-jar","app.jar"]

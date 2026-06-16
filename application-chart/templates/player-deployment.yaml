@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: player-deployment
+
+spec:
+  selector:
+    matchLabels:
+      app: player-pod
+  template:
+    metadata:
+      labels:
+        app: player-pod
+    spec:
+      containers:
+        - name: player-container
+          image: {{ .Values.playerServiceImage}}
+          envFrom:
+            - secretRef:
+                name: env-prop
+          ports:
+            - containerPort: 8080
