@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: yt-s3-service
-          image: panchamayush/yt-s3-service:latest
+          image: {{ .Values.ytS3ServiceImage }}
           envFrom:
             - secretRef:
                 name: env-prop

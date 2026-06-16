@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: yt-ai-service
-          image: panchamayush/yt-ai-service:latest
+          image: {{ .Values.ytAiServiceImage }}
           envFrom:
             - secretRef:
                 name: env-prop

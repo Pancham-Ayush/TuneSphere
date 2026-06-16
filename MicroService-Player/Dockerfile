@@ -1,6 +1,9 @@
-FROM openjdk:25-ea-jdk
-WORKDIR /APP
+FROM eclipse-temurin:25
 
-COPY target/MicroService-Player-0.0.1-SNAPSHOT.jar /APP/PLAYER.jar
+WORKDIR app
 
-ENTRYPOINT ["java" , "-jar" ,"PLAYER.jar"]
+COPY target/*.jar app.jar
+
+EXPOSE 8080
+
+CMD ["java","-jar","app.jar"]

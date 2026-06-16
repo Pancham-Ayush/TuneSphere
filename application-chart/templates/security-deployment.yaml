@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: security-service
-          image: panchamayush/security-service:latest
+          image: {{ .Values.securityServiceImage }}
           envFrom:
             - secretRef:
                 name: env-prop

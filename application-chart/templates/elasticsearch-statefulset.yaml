@@ -57,3 +57,11 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: elasticsearch-storage
+
+      spec:
+        accessModes:
+          - ReadWriteOnce
+
+        resources:
+          requests:
+            storage: 5Gi

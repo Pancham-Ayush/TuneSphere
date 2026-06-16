@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: eureka-app
-          image: panchamayush/eureka-docker
+          image: {{ .Values.eurekaServerImage }}
           ports:
             - containerPort: 8761
 
